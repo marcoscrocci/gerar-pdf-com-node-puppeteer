@@ -217,4 +217,31 @@ app.get('/testar/pdf', async(request, response) => {
     return response.send(pdf)
 })
 
-app.listen(3000)
+app.get('/livros/pdf', async(request, response) => {
+
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+
+    await page.goto('http://localhost:3000/#/livros/relatorio', {
+        waitUntil: 'networkidle2'
+    })
+
+    const pdf = await page.pdf({
+        printBackground: true,
+        format: 'A4',
+        margin: { top: "1.9cm", left: "1.2cm", right: "1.2cm", bottom: "1.8cm" },
+        // displayHeaderFooter: true,
+        // headerTemplate: '<span style="font-size: 25px; margin-left: 1.5cm; margin-right: 1.5cm"> <span>HEADER</span>',
+        //footerTemplate: '<span style="font-size: 30px"> <span>FOOTER</span>'
+        
+        landscape: true
+    })
+
+    await browser.close()
+
+    response.contentType("application/pdf")
+
+    return response.send(pdf)
+})
+
+app.listen(3001)
